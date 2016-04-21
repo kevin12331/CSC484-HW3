@@ -2,7 +2,7 @@
 
 
 public abstract class ActionNode implements DecisionTreeNode {
-	String getAction() {
+	Steering getAction() {
 		return null; 
 	}
 

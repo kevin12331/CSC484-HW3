@@ -3,6 +3,7 @@ public class grabPlayer extends Task {
 	
 	Map map;
 	Arrive arrive;
+	String name = "grabPlayer";
 	
 	public grabPlayer(Map map){
 		this.map = map;
@@ -18,7 +19,12 @@ public class grabPlayer extends Task {
 		}
 		
 		map.characters.getLast().update(arrive.getAction(), time);
+		this.map.lastAction = this;
 		return true;
+	}
+	
+	public String toString(){
+		return name;
 	}
 
 }

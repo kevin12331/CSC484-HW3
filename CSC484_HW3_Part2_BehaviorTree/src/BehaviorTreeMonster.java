@@ -1,3 +1,7 @@
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 import processing.core.PApplet;
 
 public class BehaviorTreeMonster {
@@ -63,8 +67,15 @@ public class BehaviorTreeMonster {
 	
 	public void execute( float time, Map map ){
 		
-		s1.run( time, map );
+	    
 
+		
+		s1.run( time, map );
+		String line = (this.nearDoor.run(time, map) + "         " +  map.doorOpen +  "               "  + doorLocked.run(time, map) + "              " + map.characters.getLast().nikesOn 
+				+ "                   " + this.seeDoor.run(time, map) +  "                       " + this.seeNikes.run(time, map) + "                  " + map.lastAction.toString() );
+		
+		Files.write(Paths.get("file5.txt"), line );
+		File file = new File();
 		
 	}
 }

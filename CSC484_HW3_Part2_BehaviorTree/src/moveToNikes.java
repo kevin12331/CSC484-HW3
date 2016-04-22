@@ -2,7 +2,7 @@
 public class moveToNikes extends Task {
 	Map map;
 	Arrive arrive;
-
+	String name = "moveToNikes";
 	
 	
 	public moveToNikes(Map map){
@@ -21,8 +21,12 @@ public class moveToNikes extends Task {
 			map.characters.getLast().nikesOn = true;
 			map.characters.getLast().maxSpeed = (float) .13;
 		}
-		
+		this.map.lastAction = this;
 		return true;
 			
+	}
+	
+	public String toString(){
+		return name;
 	}
 }

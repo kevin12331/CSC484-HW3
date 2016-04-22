@@ -4,6 +4,7 @@ public class bargeIn extends Task {
 	
 	Map map;
 	ArriveBarge arrive;
+	String name = "bargeIn";
 
 	
 	public bargeIn(Map map){
@@ -47,7 +48,12 @@ public class bargeIn extends Task {
 			map.doorOpen = true;
 		}
 		}
+		this.map.lastAction = this;
 		return true;
 
+	}
+	
+	public String toString(){
+		return name;
 	}
 }

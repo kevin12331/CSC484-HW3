@@ -7,6 +7,7 @@ public class moveToDoor extends Task {
 	LinkedList<Graph.Edge> path = new LinkedList<Graph.Edge>();
 	Graph.Node closest = null;
 	Graph.Node end  = null;
+	String name = "moveToDoor";
 	
 	
 	public moveToDoor(Map map){
@@ -43,7 +44,12 @@ public class moveToDoor extends Task {
 				map.characters.getLast().update(arrive.getAction(), time);
 			} else 
 				PathFollow.pathFollow(map.characters.getLast(), path, time);
+			this.map.lastAction = this;
 			return true;
+	}
+	
+	public String toString(){
+		return name;
 	}
 
 }

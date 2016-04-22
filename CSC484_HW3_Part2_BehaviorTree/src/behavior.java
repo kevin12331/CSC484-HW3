@@ -1,3 +1,4 @@
+
 import java.util.LinkedList;
 
 import processing.core.*;
@@ -29,6 +30,12 @@ public class behavior extends PApplet {
 		previousTime = millis();
 		world = new Map( this, characters );
 		btm = new BehaviorTreeMonster( this, world );
+		
+		System.out.println("At Door?  |  Door Open?    |    Door Locked?   |    Nikes On?    |     Door less than 250?    |    Nikes less than 250?   |    Action ");
+		System.out.println("_______________________________________________________________________________________________________________________________________");
+		
+		
+	
 	}
 
 

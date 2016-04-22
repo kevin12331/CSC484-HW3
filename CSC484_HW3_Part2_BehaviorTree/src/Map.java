@@ -13,6 +13,7 @@ public class Map {
 	boolean playerwins = false;
 	boolean forth = false;
 	boolean backedUp = false;
+	Task lastAction;
 
 	
 	

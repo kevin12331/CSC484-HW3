@@ -1,4 +1,8 @@
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.LinkedList;
 
 import processing.core.*;
@@ -10,6 +14,11 @@ public class behavior extends PApplet {
 	Map world;
 	BehaviorTreeMonster btm;
 	PImage photo;
+	BufferedWriter writer;
+	FileWriter fw;
+	ID3 id3;
+
+	File file;
 	
 	float previousTime, newTime;
 
@@ -20,7 +29,7 @@ public class behavior extends PApplet {
 	public void setup() {
 		
 		player1 = new Character(200, 200, 3, (float) .2, this);
-		monster = new Character(600, 200, 0, (float) .08, this);
+		monster = new Character(700, 300, 0, (float) .08, this);
 		photo = loadImage("hammer.jpg");
 		photo.resize(40, 40);
 		LinkedList<Character> characters = new LinkedList<Character>();
@@ -29,12 +38,23 @@ public class behavior extends PApplet {
 
 		previousTime = millis();
 		world = new Map( this, characters );
-		btm = new BehaviorTreeMonster( this, world );
-		
-		System.out.println("At Door?  |  Door Open?    |    Door Locked?   |    Nikes On?    |     Door less than 250?    |    Nikes less than 250?   |    Action ");
-		System.out.println("_______________________________________________________________________________________________________________________________________");
 		
 		
+		File file = new File("file.txt");
+		id3 = new ID3(file);
+		try {
+			 fw = new FileWriter(file);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		writer = new BufferedWriter(fw);
+		
+
+		btm = new BehaviorTreeMonster( this, world,  writer );
+
+		
+		System.out.println("Nikes on? | see Nikes? | See Door? | Near Door? | Door Locked? | Door Open? | Action Taken");
 	
 	}
 
@@ -70,17 +90,22 @@ public class behavior extends PApplet {
 		
 		if( world.playerEaten ){
 
-			System.out.println("Monster wins!");
+			System.out.println("Monster Wins!");
 			world.reset();
+			id3.readFile();
+			id3.printExamples();
+			System.exit(0);
 
 			
 		}
 		
         if( world.playerwins ) {
-			
-			System.out.println("Monster didnt get his tool to break the door. Player wins!");
+        	
+        	System.out.println("Player Wins!");
 			world.reset();
-
+			id3.readFile();
+			id3.printExamples();
+        	System.exit(0);
 		}
 	
 		

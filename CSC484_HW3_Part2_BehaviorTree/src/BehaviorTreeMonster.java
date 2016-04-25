@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.LinkedList;
 
 import processing.core.PApplet;
 
@@ -21,11 +22,16 @@ public class BehaviorTreeMonster {
 	 moveToNikes moveToNikes;
 	 seeNikes seeNikes;
 	 attemptBarge attemptBarge;
+	 BufferedWriter writer;
+	 
+	 LinkedList<Example> examples;
 	
-	public BehaviorTreeMonster( PApplet parent, Map map ){
+	public BehaviorTreeMonster( PApplet parent, Map map, BufferedWriter writer ){
 
 
 		this.parent = parent;
+		this.writer = writer;
+		examples = new LinkedList<Example>();
 
 		 s1 = new Selector(); s2 = new Selector();
 		 q1 = new Sequence(); q2 = new Sequence(); q3 = new Sequence(); q4 = new Sequence(); q5 = new Sequence(); 
@@ -66,37 +72,19 @@ public class BehaviorTreeMonster {
 	public void execute( float time, Map map ){
 		
 	    
-
+		try {
+			writer.write(map.characters.getLast().nikesOn + " " + seeNikes.run(time, map) + " " + seeDoor.run(time, map) + " " + this.nearDoor.run(time, map) + " " + !map.doorOpen + " " +  map.doorOpen + " " + 
+		    map.lastAction + " " );
+			writer.newLine();
+			writer.flush();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		s1.run( time, map );
-		String line = (this.nearDoor.run(time, map) + "         " +  map.doorOpen +  "               "  + doorLocked.run(time, map) + "              " + map.characters.getLast().nikesOn 
-				+ "                   " + this.seeDoor.run(time, map) +  "                       " + this.seeNikes.run(time, map) + "                  " + map.lastAction.toString() );
-		
-		File file = new File("file5.txt");
-		if (!file.exists()) {
-			try {
-				file.createNewFile();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}			
-		FileWriter fw = null;
-		try {
-			fw = new FileWriter(file.getAbsoluteFile());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
-		BufferedWriter writer = new BufferedWriter(fw);
-		try {
-			writer.write(line);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		System.out.println(line);
-		
+
+		 		 
 	}
 }

@@ -9,11 +9,20 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ID3 {
 	
 	LinkedList<Example> examples;
+	LinkedList<String> attributes;
+
 	File file;
 	
 	public ID3( File file ){
 		
-		this.file = file;				
+		this.file = file;	
+		attributes.add("nikesOn");
+		attributes.add("seeNikes");
+		attributes.add("seeDoor");
+		attributes.add("nearDoor");
+		attributes.add("doorLocked");
+		attributes.add("doorOpen");
+		
 	}
 	
 	void printExamples(){
@@ -25,6 +34,36 @@ public class ID3 {
 			}
 			System.out.println(e.action);
 		}
+			
+	}
+	
+	void makeTree( LinkedList<Example> examples, LinkedList<String> attributes, DecisionNode decisionNode  ){
+		
+		int initialEntropy = entropy(examples);
+		
+		if(initialEntropy <=0 )
+			return;
+		
+		int exampleCount = examples.size();
+		
+		int bestInformationGain = 0;
+		String bestSplitAttribute = "";
+		Hashtable<Boolean, LinkedList<Example>> bestSets;
+		
+		for(String attribute: attributes){
+			Hashtable<Boolean, LinkedList<Example>> sets = splitByAttribute(examples, attribute);
+			int overallEntropy = entropyOfSets(sets, exampleCount);
+			int informationGain = initialEntropy - overallEntropy;
+			
+			if (informationGain > bestInformationGain){
+				bestInformationGain = informationGain;
+				bestSplitAttribute  = attribute;
+				bestSets = sets;
+			}
+			
+			//TODO
+		}
+		
 			
 	}
 	

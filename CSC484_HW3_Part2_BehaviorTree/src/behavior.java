@@ -93,7 +93,6 @@ public class behavior extends PApplet {
 			System.out.println("Monster Wins!");
 			world.reset();
 			id3.readFile();
-			id3.printExamples();
 			System.exit(0);
 
 			
@@ -104,7 +103,6 @@ public class behavior extends PApplet {
         	System.out.println("Player Wins!");
 			world.reset();
 			id3.readFile();
-			id3.printExamples();
         	System.exit(0);
 		}
 	

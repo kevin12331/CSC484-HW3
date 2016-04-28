@@ -71,10 +71,11 @@ public class BehaviorTreeMonster {
 	
 	public void execute( float time, Map map ){
 		
-	    
+		s1.run( time, map );
+		
 		try {
 			writer.write(map.characters.getLast().nikesOn + " " + seeNikes.run(time, map) + " " + seeDoor.run(time, map) + " " + this.nearDoor.run(time, map) + " " + !map.doorOpen + " " +  map.doorOpen + " " + 
-		    map.lastAction + " " );
+		    map.lastAction );
 			writer.newLine();
 			writer.flush();
 		} catch (IOException e) {
@@ -82,7 +83,7 @@ public class BehaviorTreeMonster {
 			e.printStackTrace();
 		}
 		
-		s1.run( time, map );
+		
 
 
 		 		 

@@ -6,22 +6,29 @@ import java.util.Map.Entry;
 import java.util.StringTokenizer;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import processing.core.PApplet;
+
 public class ID3 {
 	
-	LinkedList<Example> examples;
-	LinkedList<String> attributes;
+	public LinkedList<Example> examples;
+	public LinkedList<String> attributes;
+	Map map;
 
 	File file;
+	PApplet parent;
 	
-	public ID3( File file ){
+	public ID3( File file, Map map, PApplet parent ){
 		
 		this.file = file;	
+		attributes = new LinkedList<String>();
 		attributes.add("nikesOn");
 		attributes.add("seeNikes");
 		attributes.add("seeDoor");
 		attributes.add("nearDoor");
 		attributes.add("doorLocked");
 		attributes.add("doorOpen");
+		this.map = map;
+		this.parent = parent;
 		
 	}
 	
@@ -37,23 +44,24 @@ public class ID3 {
 			
 	}
 	
-	void makeTree( LinkedList<Example> examples, LinkedList<String> attributes, DecisionNode decisionNode  ){
+	void makeTree( LinkedList<Example> examples, LinkedList<String> attributes, MultiDecision decisionNode  ){
 		
-		int initialEntropy = entropy(examples);
+		float initialEntropy = entropy(examples);
 		
-		if(initialEntropy <=0 )
+		
+		if(initialEntropy <= 0 )
 			return;
 		
 		int exampleCount = examples.size();
 		
-		int bestInformationGain = 0;
+		float bestInformationGain = 0;
 		String bestSplitAttribute = "";
-		Hashtable<Boolean, LinkedList<Example>> bestSets;
+		Hashtable<Boolean, LinkedList<Example>> bestSets = null;
 		
 		for(String attribute: attributes){
 			Hashtable<Boolean, LinkedList<Example>> sets = splitByAttribute(examples, attribute);
-			int overallEntropy = entropyOfSets(sets, exampleCount);
-			int informationGain = initialEntropy - overallEntropy;
+			float overallEntropy = entropyOfSets(sets, exampleCount);
+			float informationGain = initialEntropy - overallEntropy;
 			
 			if (informationGain > bestInformationGain){
 				bestInformationGain = informationGain;
@@ -61,7 +69,59 @@ public class ID3 {
 				bestSets = sets;
 			}
 			
-			//TODO
+			decisionNode.decision = bestSplitAttribute;
+			
+			LinkedList<String> newAttributes = new LinkedList<String>();
+			for(String a : attributes){
+				if(!a.equals(bestSplitAttribute))
+					newAttributes.add(a);
+			}
+			
+			Iterator<Entry<Boolean, LinkedList<Example>>> i = bestSets.entrySet().iterator();
+			while(i.hasNext()){
+				Entry<Boolean, LinkedList<Example>> next = i.next();
+
+				LinkedList<Example> set = next.getValue();
+				if(set.size() == 0)
+					continue;
+				boolean attributeValue = set.get(0).getValue(bestSplitAttribute);
+				
+				MultiDecision daughter = null;
+				
+				//TODO
+				if(bestSplitAttribute.equals("seeDoor")){
+					daughter = new seeDoorMultiDecisionNode();
+					decisionNode.daughterNodes.put(false, new searchAction(map, parent));
+					decisionNode.daughterNodes.put(true, new moveToDoorAction(map));
+				} if(bestSplitAttribute.equals("nikesOn")){	
+					daughter = new nikesOnMultiDecisionNode();
+					decisionNode.daughterNodes.put(attributeValue, daughter);	
+
+				} if(bestSplitAttribute.equals("seeNikes")){
+					 daughter = new seeNikesMultiDecisionNode();
+					decisionNode.daughterNodes.put(false, daughter);
+					decisionNode.daughterNodes.put(true, new moveToNikesAction(map));
+				} if(bestSplitAttribute.equals("nearDoor")){
+					 daughter = new nearDoorMultiDecisionNode();
+					decisionNode.daughterNodes.put(attributeValue, daughter);
+
+				} if(bestSplitAttribute.equals("doorLocked")){
+					 daughter = new doorLockedMultiDecisionNode();
+					decisionNode.daughterNodes.put(false, daughter);
+					decisionNode.daughterNodes.put(true, new bargeInAction(map));
+				} if(bestSplitAttribute.equals("doorOpen")){
+					 daughter = new doorOpenMultiDecisionNode();
+					decisionNode.daughterNodes.put(false, daughter);
+					decisionNode.daughterNodes.put(true, new grabPlayerAction(map));
+				}
+				
+				
+				
+								
+				
+				makeTree(set, newAttributes, daughter);
+			}
+			
 		}
 		
 			
@@ -145,13 +205,13 @@ public class ID3 {
 	
 	
 	//Returns the entropy of a given set of lists of examples
-	int entropyOfSets(Hashtable<Boolean, LinkedList<Example>> sets, int exampleCount ){
-		int entropy = 0;
+	float entropyOfSets(Hashtable<Boolean, LinkedList<Example>> sets, int exampleCount ){
+		float entropy = 0;
 		
 		Iterator<Entry<Boolean, LinkedList<Example>>> iterator = sets.entrySet().iterator();
 		while(iterator.hasNext()){
 			LinkedList<Example> examples = iterator.next().getValue();
-			int proportion = examples.size() / exampleCount;
+			float proportion = (float) examples.size() / exampleCount;
 			entropy -= proportion * entropy(examples);
 		}
 		return entropy;
@@ -181,7 +241,7 @@ public class ID3 {
 	}
 	
 	//Get the entropy of the list of examples
-	int entropy( LinkedList<Example> examples ){
+	float entropy( LinkedList<Example> examples ){
 		
 		Hashtable<String, AtomicInteger> actionTallies = new Hashtable<String, AtomicInteger>();
 		
@@ -193,26 +253,44 @@ public class ID3 {
 
 		
 		int exampleCount = examples.size();
-		
+
 		if (exampleCount == 0)
 			return 0;
 				
+
+		
 		for( Example e : examples ){
 			actionTallies.get(e.action).incrementAndGet();
+			
 		}
 		
-		int actionCount = actionTallies.size();
 		
+		int actionCount = 0;
+		
+		Iterator<Entry<String, AtomicInteger>> i = actionTallies.entrySet().iterator();
+		
+		while(i.hasNext()){
+			if(i.next().getValue().intValue() != 0)
+				actionCount++;
+		}
+		
+		
+				
 		if(actionCount == 0)
 			return 0;
 		
-		int entropy = 0;
+		float entropy = 0;
 		
 		Iterator<Entry<String, AtomicInteger>> iterator = actionTallies.entrySet().iterator();
 		
 		while(iterator.hasNext()){
-			int proportion = iterator.next().getValue().get() / exampleCount;
-			entropy -= proportion * log2(proportion);
+			int nextValue =  iterator.next().getValue().intValue();
+			if(nextValue == 0)
+				continue;
+			
+			float proportion = (float) nextValue / exampleCount;
+			
+			entropy -= (float) proportion * log2(proportion);
 			
 		}
 		

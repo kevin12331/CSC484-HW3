@@ -91,6 +91,9 @@ public class ID3 {
 				daughter = null;
 				daughter = null;
 				daughter = null;
+				daughter = null;
+				daughter = null;
+				daughter = null;
 				
 				//TODO
 				if(bestSplitAttribute.equals("seeDoor")){

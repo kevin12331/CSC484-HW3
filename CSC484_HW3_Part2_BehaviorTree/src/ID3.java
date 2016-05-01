@@ -87,6 +87,7 @@ public class ID3 {
 				boolean attributeValue = set.get(0).getValue(bestSplitAttribute);
 				
 				MultiDecision daughter = null;
+				daughter = null;
 				
 				//TODO
 				if(bestSplitAttribute.equals("seeDoor")){

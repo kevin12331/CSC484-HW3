@@ -89,6 +89,7 @@ public class ID3 {
 				MultiDecision daughter = null;
 				daughter = null;
 				daughter = null;
+				daughter = null;
 				
 				//TODO
 				if(bestSplitAttribute.equals("seeDoor")){
